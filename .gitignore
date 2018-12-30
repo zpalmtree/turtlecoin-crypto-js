@@ -68,3 +68,6 @@ typings/
 
 # html files (usually built)
 *.html
+
+# don't commit the emscripten repo 
+emsdk
