@@ -101,12 +101,28 @@ std::string cn_fast_hash(std::string data)
   return hash;
 }
 
+std::string underivePublicKey(std::string derivation, size_t outputIndex, std::string derived_key)
+{
+  Crypto::KeyDerivation c_derivation;
+  Common::podFromHex(derivation, c_derivation);
+
+  Crypto::PublicKey c_derived_key;
+  Common::podFromHex(derived_key, c_derived_key);
+
+  Crypto::PublicKey c_result;
+
+  Crypto::underive_public_key(c_derivation, outputIndex, c_derived_key, c_result);
+
+  return Common::podToHex(c_result);
+}
+
 EMSCRIPTEN_BINDINGS(signatures)
 {
   function("generateRingSignatures", &generateRingSignatures);
   function("generate_keys", &generateKeys);
   function("generate_key_image", &generateKeyImage);
   function("cn_fast_hash", &cn_fast_hash);
+  function("underivePublicKey", &underivePublicKey);
   
   register_vector<std::string>("VectorString");
 
