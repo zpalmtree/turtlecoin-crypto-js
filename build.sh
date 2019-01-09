@@ -33,11 +33,11 @@ echo " Done"
 # Compile the actual file
 echo ""
 echo -n "Transpiling Project from C++ to Javascript... "
-emcc -s WASM=0 --bind -std=c++17 c.bc cpp.bc ../src/turtlecoin-crypto.cpp -o "turtlecoin-crypto.js"
-emcc -s WASM=0 -s ENVIRONMENT=node --bind -std=c++17 c.bc cpp.bc ../src/turtlecoin-crypto.cpp -o "turtlecoin-crypto-node.js"
-emcc -s WASM=0 -s ENVIRONMENT=web --bind -std=c++17 c.bc cpp.bc ../src/turtlecoin-crypto.cpp -o "turtlecoin-crypto-web.js"
-emcc -s WASM=0 -s ENVIRONMENT=worker --bind -std=c++17 c.bc cpp.bc ../src/turtlecoin-crypto.cpp -o "turtlecoin-crypto-worker.js"
-emcc -s WASM=0 -s ENVIRONMENT=shell --bind -std=c++17 c.bc cpp.bc ../src/turtlecoin-crypto.cpp -o "turtlecoin-crypto-shell.js"
+emcc -s WASM=0 -s POLYFILL_OLD_MATH_FUNCTIONS=1 --bind -std=c++17 c.bc cpp.bc ../src/turtlecoin-crypto.cpp -o "turtlecoin-crypto.js"
+emcc -s WASM=0 -s ENVIRONMENT=node -s POLYFILL_OLD_MATH_FUNCTIONS=1 --bind -std=c++17 c.bc cpp.bc ../src/turtlecoin-crypto.cpp -o "turtlecoin-crypto-node.js"
+emcc -s WASM=0 -s ENVIRONMENT=web -s POLYFILL_OLD_MATH_FUNCTIONS=1 --bind -std=c++17 c.bc cpp.bc ../src/turtlecoin-crypto.cpp -o "turtlecoin-crypto-web.js"
+emcc -s WASM=0 -s ENVIRONMENT=worker -s POLYFILL_OLD_MATH_FUNCTIONS=1 --bind -std=c++17 c.bc cpp.bc ../src/turtlecoin-crypto.cpp -o "turtlecoin-crypto-worker.js"
+emcc -s WASM=0 -s ENVIRONMENT=shell -s POLYFILL_OLD_MATH_FUNCTIONS=1 --bind -std=c++17 c.bc cpp.bc ../src/turtlecoin-crypto.cpp -o "turtlecoin-crypto-shell.js"
 echo " Done"
 
 cd ..
