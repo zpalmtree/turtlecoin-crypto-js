@@ -71,3 +71,6 @@ typings/
 
 # don't commit the emscripten repo 
 emsdk
+
+# Build artifacts
+build

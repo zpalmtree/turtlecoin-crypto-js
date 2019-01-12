@@ -21,23 +21,87 @@ mkdir -p build && cd build
 # Compile our C dependencies
 echo ""
 echo -n "Transpiling C dependencies to bytecode... "
-emcc ../src/*.c -o c.bc
+
+emcc -O3 \          `# Aggressive optimization` \
+    ../src/*.c \    `# Input files` \
+    -o c.bc         `# Output file`
+
 echo " Done"
 
 # Compile our C++ dependencies
 echo ""
 echo -n "Transpiling C++ dependencies to bytecode... "
-emcc -std=c++17 ../src/crypto.cpp ../src/StringTools.cpp -o cpp.bc
+
+emcc -O3 \                                      `# Aggressive optimization` \
+     -std=c++17 \                               `# Use C++17 compilation standard` \
+     ../src/crypto.cpp ../src/StringTools.cpp \ `# Input files` \
+     -o cpp.bc                                  `# Output file`
+
 echo " Done"
 
 # Compile the actual file
 echo ""
 echo -n "Transpiling Project from C++ to Javascript... "
-emcc -s WASM=0 -s POLYFILL_OLD_MATH_FUNCTIONS=1 --bind -std=c++17 c.bc cpp.bc ../src/turtlecoin-crypto.cpp -o "turtlecoin-crypto.js"
-emcc -s WASM=0 -s ENVIRONMENT=node -s POLYFILL_OLD_MATH_FUNCTIONS=1 --bind -std=c++17 c.bc cpp.bc ../src/turtlecoin-crypto.cpp -o "turtlecoin-crypto-node.js"
-emcc -s WASM=0 -s ENVIRONMENT=web -s POLYFILL_OLD_MATH_FUNCTIONS=1 --bind -std=c++17 c.bc cpp.bc ../src/turtlecoin-crypto.cpp -o "turtlecoin-crypto-web.js"
-emcc -s WASM=0 -s ENVIRONMENT=worker -s POLYFILL_OLD_MATH_FUNCTIONS=1 --bind -std=c++17 c.bc cpp.bc ../src/turtlecoin-crypto.cpp -o "turtlecoin-crypto-worker.js"
-emcc -s WASM=0 -s ENVIRONMENT=shell -s POLYFILL_OLD_MATH_FUNCTIONS=1 --bind -std=c++17 c.bc cpp.bc ../src/turtlecoin-crypto.cpp -o "turtlecoin-crypto-shell.js"
+
+# Standard build
+emcc -g1                                      `# Don't completely make the JS unreadable. Makes it easier to patch for react native` \
+     -O3                                      `# Aggressive optimization` \
+     -s WASM=0                                `# Don't use wasm, use asm.js instead` \
+     -s POLYFILL_OLD_MATH_FUNCTIONS=1         `# Provide polyfills for some math functions, needed for react-native` \
+     --bind                                   `# Compiles the source code using the Embind bindings to connect C/C++ (yeah idk what that means either)` \
+     -std=c++17                               `# Use C++17 compilation standard` \
+     --memory-init-file 0                     `# Don't add a separate memory initialization file (Doesn't work with react native)` \
+     -o "turtlecoin-crypto.js"                `# Output to "turtlecoin-crypto.js"` \
+     c.bc cpp.bc ../src/turtlecoin-crypto.cpp `# Input files`
+
+# Node only build
+emcc -g1                                      `# Don't completely make the JS unreadable. Makes it easier to patch for react native` \
+     -O3                                      `# Aggressive optimization` \
+     -s WASM=0                                `# Don't use wasm, use asm.js instead` \
+     -s POLYFILL_OLD_MATH_FUNCTIONS=1         `# Provide polyfills for some math functions, needed for react-native` \
+     --bind                                   `# Compiles the source code using the Embind bindings to connect C/C++ (yeah idk what that means either)` \
+     -std=c++17                               `# Use C++17 compilation standard` \
+     -s ENVIRONMENT=node                      `# Compile just for node` \
+     --memory-init-file 0                     `# Don't add a separate memory initialization file (Doesn't work with react native)` \
+     -o "turtlecoin-crypto.js"                `# Output to "turtlecoin-crypto.js"` \
+     c.bc cpp.bc ../src/turtlecoin-crypto.cpp `# Input files`
+
+# Web only build
+emcc -g1                                      `# Don't completely make the JS unreadable. Makes it easier to patch for react native` \
+     -O3                                      `# Aggressive optimization` \
+     -s WASM=0                                `# Don't use wasm, use asm.js instead` \
+     -s POLYFILL_OLD_MATH_FUNCTIONS=1         `# Provide polyfills for some math functions, needed for react-native` \
+     --bind                                   `# Compiles the source code using the Embind bindings to connect C/C++ (yeah idk what that means either)` \
+     -std=c++17                               `# Use C++17 compilation standard` \
+     -s ENVIRONMENT=web                       `# Compile just for the web` \
+     --memory-init-file 0                     `# Don't add a separate memory initialization file (Doesn't work with react native)` \
+     -o "turtlecoin-crypto.js"                `# Output to "turtlecoin-crypto.js"` \
+     c.bc cpp.bc ../src/turtlecoin-crypto.cpp `# Input files`
+
+# Worker only build
+emcc -g1                                      `# Don't completely make the JS unreadable. Makes it easier to patch for react native` \
+     -O3                                      `# Aggressive optimization` \
+     -s WASM=0                                `# Don't use wasm, use asm.js instead` \
+     -s POLYFILL_OLD_MATH_FUNCTIONS=1         `# Provide polyfills for some math functions, needed for react-native` \
+     --bind                                   `# Compiles the source code using the Embind bindings to connect C/C++ (yeah idk what that means either)` \
+     -std=c++17                               `# Use C++17 compilation standard` \
+     -s ENVIRONMENT=worker                    `# Compile just for a worker` \
+     --memory-init-file 0                     `# Don't add a separate memory initialization file (Doesn't work with react native)` \
+     -o "turtlecoin-crypto.js"                `# Output to "turtlecoin-crypto.js"` \
+     c.bc cpp.bc ../src/turtlecoin-crypto.cpp `# Input files`
+
+# Worker only build
+emcc -g1                                      `# Don't completely make the JS unreadable. Makes it easier to patch for react native` \
+     -O3                                      `# Aggressive optimization` \
+     -s WASM=0                                `# Don't use wasm, use asm.js instead` \
+     -s POLYFILL_OLD_MATH_FUNCTIONS=1         `# Provide polyfills for some math functions, needed for react-native` \
+     --bind                                   `# Compiles the source code using the Embind bindings to connect C/C++ (yeah idk what that means either)` \
+     -std=c++17                               `# Use C++17 compilation standard` \
+     -s ENVIRONMENT=shell                     `# Compile just for a shell` \
+     --memory-init-file 0                     `# Don't add a separate memory initialization file (Doesn't work with react native)` \
+     -o "turtlecoin-crypto.js"                `# Output to "turtlecoin-crypto.js"` \
+     c.bc cpp.bc ../src/turtlecoin-crypto.cpp `# Input files`
+
 echo " Done"
 
 cd ..
